@@ -9,6 +9,8 @@ function game:enter()
 	
     self.canvas = love.graphics.newCanvas()
 	self:startTree()
+	
+	self.random = false
 end
 
 function game:startTree()
@@ -37,10 +39,18 @@ function game:drawBranch(x, y, angle, l, iter)
 	love.graphics.setColor(100, (14/l)*100+25, 25)
 	
 	love.graphics.line(x, y, x2, y2)
-	if iter < 14 then
-		l = l*3/5
-		self:drawBranch(x2, y2, angle+self.angleChange1, l, iter)
-		self:drawBranch(x2, y2, angle+self.angleChange2, l, iter)
+	if iter < 10 then
+		if self.random then
+			local branches = math.random(2, 3)
+			for i = 1, branches do
+				local angle = i*(self.angleChange1-self.angleChange2)/branches + angle
+				self:drawBranch(x2, y2, angle + math.rad(math.random(-50, 50)), l * (math.random(3,6)/8), iter)
+			end
+		else
+			l = l*3/5
+			self:drawBranch(x2, y2, angle+self.angleChange1, l, iter)
+			self:drawBranch(x2, y2, angle+self.angleChange2, l, iter)
+		end
 	end
 end
 
@@ -63,6 +73,14 @@ function game:keypressed(key, isrepeat)
     if console.keypressed(key) then
         return
     end
+	
+	if key == 'f1' then
+		if self.random then
+			self.random = false
+		else
+			self.random = true
+		end
+	end
 end
 
 function game:mousepressed(x, y, mbutton)
@@ -76,4 +94,8 @@ function game:draw()
     love.graphics.draw(self.canvas)
 	
 	love.graphics.print(love.timer.getFPS(), 5, 5)
+	
+	local state = 'false'
+	if self.random then state = 'true' end
+	love.graphics.print('random (f1): '..state, 5, 35)
 end
