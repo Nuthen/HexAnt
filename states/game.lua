@@ -14,6 +14,7 @@ function game:enter()
 end
 
 function game:startTree()
+	self.canvas:clear()
 	self.canvas:renderTo(function()
 		love.graphics.setColor(100, 25, 25)
 		local x, y = love.graphics.getWidth()/2, love.graphics.getHeight()*9/10
@@ -64,7 +65,6 @@ function game:update(dt)
 		self.angleChange1 = math.rad((mouseX/love.graphics.getWidth()-.5)*2*180)
 		self.angleChange2 = math.rad((mouseY/love.graphics.getHeight()-.5)*2*180)
 		
-		self.canvas:clear()
 		self:startTree()
 	end
 end
@@ -80,6 +80,11 @@ function game:keypressed(key, isrepeat)
 		else
 			self.random = true
 		end
+		self:startTree()
+	end
+	
+	if key == ' ' then
+		self:startTree()
 	end
 end
 
