@@ -45,9 +45,14 @@ function Ant:step()
 			game.hexGrid[iy][ix]:draw()
 		end)
 		
-		for jy = -1, 1 do
-			for jx = -1, 1 do
-				game.hexGrid[iy+jy][ix+jx]:setLines()
+		if game.drawBorders then
+			for jy = -1, 1 do
+				for jx = -1, 1 do
+					local nx, ny = ix+jx, iy+jy
+					if nx >= 1 and ny >= 1 and ny <= #game.hexGrid and nx <= #game.hexGrid[ny] then
+						game.hexGrid[iy+jy][ix+jx]:setLines()
+					end
+				end
 			end
 		end
 		

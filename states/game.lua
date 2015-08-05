@@ -6,29 +6,36 @@ function game:enter()
 	self.tileW = math.sqrt(3)/2 * self.tileH
 	
 	self.gridHeight = self.radius*2*self.tileH
-	self.gridWidth = (self.radius)*self.tileW*(3/2) * 1.2
+	self.gridWidth = (self.radius)*self.tileW*(3/2) * 1.2 -- width is inaccurate
 	
 	self.canvas = love.graphics.newCanvas(self.gridWidth, self.gridHeight)
-	self.canvas:setFilter('linear', 'linear') -- line traces will look a little clearer when zoomed
+	--self.canvas:setFilter('linear', 'linear') -- line traces will look a little clearer when zoomed
 	
 	-- origin
 	self.startX = self.canvas:getWidth()/2 - love.graphics.getWidth()/2
 	self.startY = self.canvas:getHeight()/2 - love.graphics.getHeight()/2
 	
+	-- generate the tile types
 	self.tiles = {}
 	local count = math.random(2, 12)
 	for i = 1, count do
 		self.tiles[i] = {}
-		local r,g,b,a = HSL(255/count*(i-1), 170, 150, 255)
+		local r,g,b,a = HSL(255/count*(i-1), 170, 150, 255) -- tile colors generated over HSL color system
 		self.tiles[i].color = {r,g,b,a}
-		local turn = math.random(1,4)
+		local turn = math.random(1,4) -- 4 options 
 		if turn <= 2 then
-			self.tiles[i].turn = turn-3
+			self.tiles[i].turn = turn-3 -- 1,2 becomes -2,-1
 		else
-			self.tiles[i].turn = turn-2
+			self.tiles[i].turn = turn-2 -- 3,4 becomes 1,2
 		end
 	end
 	
+	--[[
+		L - one turn left
+		R - one turn right
+		< - two turns left
+		> - two turns right
+	]]
 	local turnStr = ''
 	for i = 1, #self.tiles do
 		local char = ''
@@ -46,7 +53,8 @@ function game:enter()
 	end
 	self.turnStr = turnStr
 	
-	--love.graphics.setLineWidth(1)
+
+	love.graphics.setLineWidth(1)
 	love.graphics.setLineStyle('smooth')
 	self.hexGrid = {}
 	self.zoomMax = 3
@@ -65,9 +73,7 @@ function game:enter()
 	self.timer = 0
 	self.step = .5
 	self.quickSteps = 1
-	
-	love.graphics.setPointSize(5)
-	love.graphics.setLineWidth(2)
+	self.drawBorders = true
 end
 
 function game:makeGrid(width, height)
@@ -97,11 +103,10 @@ function game:update(dt)
 		for i = 1, self.quickSteps do
 			for k, ant in ipairs(self.ants) do
 				ant:step()
-				
-				self.errorOut = true
 			end
 		end
 	end
+	
 	
 	local cameraX = self.camera.x
 	local cameraY = self.camera.y
@@ -122,6 +127,10 @@ function game:keypressed(key, isrepeat)
 	-- reset
 	if key == 'f2' then
 		self:enter()
+	end
+	
+	if key == 'f5' then
+		self.drawBorders = not self.drawBorders
 	end
 	
 	-- toggle fullscreen
@@ -170,9 +179,12 @@ function game:draw()
 	
 	love.graphics.draw(self.canvas)
 	
-	for iy = 1, #self.hexGrid do
-		for ix = 1, #self.hexGrid[iy] do
-			self.hexGrid[iy][ix]:drawLines()
+	if self.drawBorders then
+		love.graphics.setColor(255, 255, 255)
+		for iy = 1, #self.hexGrid do
+			for ix = 1, #self.hexGrid[iy] do
+				self.hexGrid[iy][ix]:drawLines()
+			end
 		end
 	end
 	

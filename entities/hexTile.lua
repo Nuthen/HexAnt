@@ -52,49 +52,37 @@ function HexTile:setLines(initial)
 		if not game:inRange(tileX, tileY-1, tileZ+1) or game:getTile(tileX, tileY-1, tileZ+1) ~= tileType then -- southeast
 			local x1, y1, x2, y2 = self.points[1], self.points[2], self.points[3], self.points[4]
 			
-			if initial or self:lineCheck(x1, y1, x2, y2) then
-				self.lines[1] = 1
-			end
+			self.lines[1] = 1
 		end
 		
 		if not game:inRange(tileX+1, tileY-1, tileZ) or game:getTile(tileX+1, tileY-1, tileZ) ~= tileType then -- south
 			local x1, y1, x2, y2 = self.points[3], self.points[4], self.points[5], self.points[6]
 			
-			if initial or self:lineCheck(x1, y1, x2, y2) then
-				self.lines[2] = 1
-			end
+			self.lines[2] = 1
 		end
 		
 		if not game:inRange(tileX+1, tileY, tileZ-1) or game:getTile(tileX+1, tileY, tileZ-1) ~= tileType then -- southwest
 			local x1, y1, x2, y2 = self.points[5], self.points[6], self.points[7], self.points[8]
 			
-			if initial or self:lineCheck(x1, y1, x2, y2) then
-				self.lines[3] = 1
-			end
+			self.lines[3] = 1
 		end
 		
 		if not game:inRange(tileX, tileY+1, tileZ-1) or game:getTile(tileX, tileY+1, tileZ-1) ~= tileType then -- northwest
 			local x1, y1, x2, y2 = self.points[7], self.points[8], self.points[9], self.points[10]
 			
-			if initial or self:lineCheck(x1, y1, x2, y2) then
-				self.lines[4] = 1
-			end
+			self.lines[4] = 1
 		end
 		
 		if not game:inRange(tileX-1, tileY+1, tileZ) or game:getTile(tileX-1, tileY+1, tileZ) ~= tileType then -- north
 			local x1, y1, x2, y2 = self.points[9], self.points[10], self.points[11], self.points[12]
 			
-			if initial or self:lineCheck(x1, y1, x2, y2) then
-				self.lines[5] = 1
-			end
+			self.lines[5] = 1
 		end
 		
 		if not game:inRange(tileX-1, tileY, tileZ+1) or game:getTile(tileX-1, tileY, tileZ+1) ~= tileType then -- northeast
 			local x1, y1, x2, y2 = self.points[11], self.points[12], self.points[1], self.points[2]
 			
-			if initial or self:lineCheck(x1, y1, x2, y2) then
-				self.lines[6] = 1
-			end
+			self.lines[6] = 1
 		end
 	end
 	
@@ -111,20 +99,18 @@ function HexTile:draw()
 		
 		love.graphics.polygon('fill', self.points)
 		
-		love.graphics.setColor(255, 255, 255)
+		--love.graphics.setColor(255, 255, 255)
 		--love.graphics.polygon('line', self.points)
 		
 	end
 end
 
 function HexTile:drawLines()
-	local sortedLines = self.sortedLines
-	
-	love.graphics.setColor(255, 255, 255)
-	
-	for k, line in pairs(self.lineList) do
-		if #line > 0 then
-			love.graphics.line(line)
+	if #self.lineList > 0 then
+		for k, line in pairs(self.lineList) do
+			if #line > 0 then
+				love.graphics.line(line)
+			end
 		end
 	end
 end
@@ -180,6 +166,13 @@ function HexTile:runLines()
 						end
 					end
 				end
+			end
+		end
+		
+		-- deletes any extra arrays
+		for i = #lineList, 1, -1 do
+			if #lineList[i] == 0 then
+				table.remove(lineList, i)
 			end
 		end
 		
